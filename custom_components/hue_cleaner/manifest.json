@@ -1,0 +1,13 @@
+{
+  "domain": "hue_cleaner",
+  "name": "Hue Cleaner",
+  "codeowners": ["@srescio"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/srescio/hue-cleaner-homeassistant",
+  "integration_type": "service",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/srescio/hue-cleaner-homeassistant/issues",
+  "requirements": ["aiohttp>=3.8.0"],
+  "version": "1.0.0"
+}

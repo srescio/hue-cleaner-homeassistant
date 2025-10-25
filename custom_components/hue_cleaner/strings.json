@@ -1,0 +1,28 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Hue Cleaner Setup",
+        "description": "Enter your Philips Hue Hub IP address",
+        "data": {
+          "host": "Hue Hub IP Address"
+        }
+      },
+      "api_key": {
+        "title": "API Key Configuration",
+        "description": "Press the button on your Hue Hub, then enter the API key that appears",
+        "data": {
+          "api_key": "API Key"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Unable to connect to Hue Hub. Please check the IP address and ensure the hub is powered on and connected to your network.",
+      "invalid_ip": "Invalid IP address format. Please enter a valid IP address.",
+      "invalid_api_key": "Invalid API key. Please press the button on your Hue Hub and try again."
+    },
+    "abort": {
+      "already_configured": "Hue Cleaner is already configured for this Hue Hub."
+    }
+  }
+}
