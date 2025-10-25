@@ -4,3 +4,10 @@ repos:
     hooks:
       - id: commitizen
         stages: [commit-msg]
+  - repo: local
+    hooks:
+      - id: check-commit-length
+        name: Check commit message length
+        entry: python check_commit_length.py
+        language: python
+        stages: [commit-msg]
