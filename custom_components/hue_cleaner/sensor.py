@@ -21,14 +21,25 @@ async def async_setup_entry(
     async_add_entities([HueCleanerSensor(coordinator)])
 
 
-class HueCleanerSensor(CoordinatorEntity, SensorEntity):
+class HueCleanerSensor(SensorEntity, CoordinatorEntity):
     """Representation of a Hue Cleaner sensor."""
 
     def __init__(self, coordinator) -> None:
         """Initialize the sensor."""
         super().__init__(coordinator)
+        self.coordinator = coordinator
         self._attr_name = "Hue Cleaner"
         self._attr_unique_id = "hue_cleaner_status"
+
+    @property
+    def name(self) -> str:
+        """Return the name of the sensor."""
+        return self._attr_name
+
+    @property
+    def unique_id(self) -> str:
+        """Return the unique ID of the sensor."""
+        return self._attr_unique_id
 
     @property
     def native_value(self) -> str:
@@ -43,4 +54,5 @@ class HueCleanerSensor(CoordinatorEntity, SensorEntity):
             "last_clean": self.coordinator.data.get("last_clean"),
             "areas_cleaned_this_run": self.coordinator.data.get("areas_cleaned_this_run", 0),
             "hue_ip": self.coordinator.data.get("hue_ip"),
+            "mode": self.coordinator.data.get("mode", "unknown"),
         }

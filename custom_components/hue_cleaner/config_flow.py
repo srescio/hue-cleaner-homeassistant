@@ -12,6 +12,7 @@ from homeassistant import config_entries
 from homeassistant.const import CONF_HOST
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers import aiohttp_client
+from homeassistant.helpers import issue_registry
 
 from .const import DOMAIN, HUE_API_BASE
 
@@ -151,6 +152,63 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema=STEP_RETRY_API_KEY_SCHEMA
         )
 
+    async def async_step_issue_repair(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Handle repair flow for issues."""
+        if user_input is not None:
+            # Get the issue context
+            issue_id = self.context.get("issue_id", "")
+            
+            if "ip_change" in issue_id:
+                # Handle IP change repair
+                new_ip = user_input.get(CONF_HOST)
+                if new_ip and self._is_valid_ip(new_ip):
+                    if await self._test_connection(new_ip):
+                        self.hue_ip = new_ip
+                        return await self.async_step_api_key()
+                    else:
+                        return self.async_show_form(
+                            step_id="issue_repair",
+                            data_schema=STEP_USER_DATA_SCHEMA,
+                            errors={"base": "cannot_connect"}
+                        )
+                else:
+                    return self.async_show_form(
+                        step_id="issue_repair",
+                        data_schema=STEP_USER_DATA_SCHEMA,
+                        errors={"base": "invalid_ip"}
+                    )
+            elif "api_key_expired" in issue_id:
+                # Handle API key repair
+                if await self._test_connection(self.hue_ip):
+                    return await self.async_step_api_key()
+                else:
+                    return self.async_show_form(
+                        step_id="issue_repair",
+                        data_schema=STEP_USER_DATA_SCHEMA,
+                        errors={"base": "cannot_connect"}
+                    )
+
+        # Show repair form
+        issue_id = self.context.get("issue_id", "")
+        if "ip_change" in issue_id:
+            return self.async_show_form(
+                step_id="issue_repair",
+                data_schema=STEP_USER_DATA_SCHEMA,
+                description_placeholders={
+                    "issue_description": "The Hue Hub IP address has changed. Please enter the new IP address."
+                }
+            )
+        else:
+            return self.async_show_form(
+                step_id="issue_repair",
+                data_schema=STEP_USER_DATA_SCHEMA,
+                description_placeholders={
+                    "issue_description": "The Hue Hub connection failed. Please check the IP address and try again."
+                }
+            )
+
     def _is_valid_ip(self, ip: str) -> bool:
         """Validate IP address format."""
         pattern = r"^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$"
@@ -209,7 +267,7 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Test API key validity."""
         try:
             session = aiohttp_client.async_get_clientsession(self.hass)
-            url = f"https://{hue_ip}/clip/v2/resource/entertainment_configuration"
+            url = f"http://{hue_ip}/clip/v2/resource/entertainment_configuration"
             
             async with session.get(
                 url,

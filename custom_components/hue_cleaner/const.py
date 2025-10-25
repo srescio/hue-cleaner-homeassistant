@@ -7,12 +7,13 @@ CONF_HUE_IP = "hue_ip"
 CONF_API_KEY = "api_key"
 
 # Default values
-DEFAULT_SCAN_INTERVAL = 7200  # 2 hours in seconds
+DEFAULT_SCAN_INTERVAL = 3600  # 1 hour in seconds (fallback polling)
 DEFAULT_TIMEOUT = 10
+DEFAULT_CLEANUP_DELAY = 5  # seconds to wait before cleaning after new area detection
 
 # API endpoints
 HUE_API_BASE = "http://{ip}/api"
-HUE_ENTERTAINMENT_API = "https://{ip}/clip/v2/resource/entertainment_configuration"
+HUE_ENTERTAINMENT_API = "http://{ip}/clip/v2/resource/entertainment_configuration"
 
 # Entertainment area patterns
 ENTERTAINMENT_AREA_NAME_PATTERN = "Entertainment area"

@@ -35,6 +35,32 @@
     "abort": {
       "already_configured": "Hue Cleaner is already configured for this Hue Hub."
     },
+    "issues": {
+      "ip_change": {
+        "title": "Hue Cleaner: Hub IP Changed",
+        "description": "The Hue Hub IP address has changed from {hue_ip}. Please reconfigure the integration.",
+        "fix_flow": {
+          "title": "Reconfigure Hue Cleaner",
+          "description": "The Hue Hub IP address has changed. Please enter the new IP address."
+        }
+      },
+      "api_key_expired": {
+        "title": "Hue Cleaner: API Key Expired", 
+        "description": "The Hue Hub API key has expired. Please reconfigure the integration.",
+        "fix_flow": {
+          "title": "Reconfigure Hue Cleaner",
+          "description": "The Hue Hub API key has expired. Please press the button on your Hue Hub and reconfigure."
+        }
+      },
+      "connection_error": {
+        "title": "Hue Cleaner: Connection Error",
+        "description": "Unable to connect to Hue Hub: {error_message}. Please check the connection and reconfigure if necessary.",
+        "fix_flow": {
+          "title": "Reconfigure Hue Cleaner",
+          "description": "Connection to Hue Hub failed. Please check the IP address and API key."
+        }
+      }
+    },
     "status": {
       "testing_connection": "🔄 Testing connection...",
       "connection_successful": "✅ Connection successful!",

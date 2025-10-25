@@ -35,6 +35,32 @@
     "abort": {
       "already_configured": "Hue Cleaner è già configurato per questo Hue Hub."
     },
+    "issues": {
+      "ip_change": {
+        "title": "Hue Cleaner: IP Hub Cambiato",
+        "description": "L'indirizzo IP del Hue Hub è cambiato da {hue_ip}. Riconfigura l'integrazione.",
+        "fix_flow": {
+          "title": "Riconfigura Hue Cleaner",
+          "description": "L'indirizzo IP del Hue Hub è cambiato. Inserisci il nuovo indirizzo IP."
+        }
+      },
+      "api_key_expired": {
+        "title": "Hue Cleaner: API Key Scaduta",
+        "description": "La chiave API del Hue Hub è scaduta. Riconfigura l'integrazione.",
+        "fix_flow": {
+          "title": "Riconfigura Hue Cleaner", 
+          "description": "La chiave API del Hue Hub è scaduta. Premi il pulsante sul tuo Hue Hub e riconfigura."
+        }
+      },
+      "connection_error": {
+        "title": "Hue Cleaner: Errore di Connessione",
+        "description": "Impossibile connettersi al Hue Hub: {error_message}. Controlla la connessione e riconfigura se necessario.",
+        "fix_flow": {
+          "title": "Riconfigura Hue Cleaner",
+          "description": "Connessione al Hue Hub fallita. Controlla l'indirizzo IP e la chiave API."
+        }
+      }
+    },
     "status": {
       "testing_connection": "🔄 Test connessione in corso...",
       "connection_successful": "✅ Connessione riuscita!",

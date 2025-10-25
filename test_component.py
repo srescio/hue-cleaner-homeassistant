@@ -152,6 +152,107 @@ def test_pytest_structure():
     
     return all_exist
 
+def test_http_protocol_usage():
+    """Test that all Hue Hub interactions use HTTP (not HTTPS)."""
+    try:
+        # Read the constants file directly to avoid import issues
+        const_path = "custom_components/hue_cleaner/const.py"
+        if not os.path.exists(const_path):
+            print(f"❌ {const_path} not found")
+            return False
+            
+        with open(const_path, 'r') as f:
+            content = f.read()
+        
+        # Check for HTTP usage in the constants
+        if 'HUE_API_BASE = "http://{ip}/api"' not in content:
+            print(f"❌ HUE_API_BASE must use HTTP in {const_path}")
+            return False
+            
+        if 'HUE_ENTERTAINMENT_API = "http://{ip}/clip/v2/resource/entertainment_configuration"' not in content:
+            print(f"❌ HUE_ENTERTAINMENT_API must use HTTP in {const_path}")
+            return False
+            
+        # Ensure no HTTPS usage for Hue Hub APIs
+        if 'https://{ip}/api' in content:
+            print(f"❌ HUE_API_BASE must not use HTTPS in {const_path}")
+            return False
+            
+        if 'https://{ip}/clip/v2/resource/entertainment_configuration' in content:
+            print(f"❌ HUE_ENTERTAINMENT_API must not use HTTPS in {const_path}")
+            return False
+        
+        print(f"✅ HUE_API_BASE uses HTTP in {const_path}")
+        print(f"✅ HUE_ENTERTAINMENT_API uses HTTP in {const_path}")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Error checking HTTP protocol usage: {e}")
+        return False
+
+def test_error_handling_structure():
+    """Test that error handling components are properly structured."""
+    try:
+        # Check coordinator has error handling methods
+        coordinator_path = "custom_components/hue_cleaner/coordinator.py"
+        if not os.path.exists(coordinator_path):
+            print(f"❌ {coordinator_path} not found")
+            return False
+            
+        with open(coordinator_path, 'r') as f:
+            content = f.read()
+        
+        # Check for error handling methods
+        required_methods = [
+            "_handle_connection_error",
+            "_create_error_notification", 
+            "_create_repair_issue",
+            "_clear_repair_issues"
+        ]
+        
+        missing_methods = []
+        for method in required_methods:
+            if f"def {method}" not in content:
+                missing_methods.append(method)
+        
+        if missing_methods:
+            print(f"❌ Missing error handling methods in {coordinator_path}: {missing_methods}")
+            return False
+        
+        # Check config flow has repair step
+        config_flow_path = "custom_components/hue_cleaner/config_flow.py"
+        if not os.path.exists(config_flow_path):
+            print(f"❌ {config_flow_path} not found")
+            return False
+            
+        with open(config_flow_path, 'r') as f:
+            content = f.read()
+        
+        if "async_step_issue_repair" not in content:
+            print(f"❌ Missing issue repair step in {config_flow_path}")
+            return False
+        
+        # Check translations have error handling
+        for lang in ["en", "it"]:
+            translation_path = f"custom_components/hue_cleaner/translations/{lang}.json"
+            if not os.path.exists(translation_path):
+                print(f"❌ {translation_path} not found")
+                return False
+                
+            with open(translation_path, 'r') as f:
+                content = f.read()
+            
+            if '"issues"' not in content:
+                print(f"❌ Missing issues translations in {translation_path}")
+                return False
+        
+        print(f"✅ Error handling structure is complete")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Error checking error handling structure: {e}")
+        return False
+
 def main():
     """Run all tests."""
     print("🧪 Testing Hue Cleaner component structure...\n")
@@ -162,6 +263,8 @@ def main():
         ("Config Flow Steps", test_config_flow_steps),
         ("Translations", test_translations),
         ("Pytest Structure", test_pytest_structure),
+        ("HTTP Protocol Usage", test_http_protocol_usage),
+        ("Error Handling Structure", test_error_handling_structure),
     ]
     
     all_passed = True
