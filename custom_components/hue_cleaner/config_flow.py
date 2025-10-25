@@ -28,14 +28,8 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
 # Step 2: API Key Generation (no input needed)
 STEP_API_KEY_DATA_SCHEMA = vol.Schema({})
 
-# Step 3: Retry API Key (with back button)
-STEP_RETRY_API_KEY_SCHEMA = vol.Schema({
-    vol.Optional("action", default=""): vol.In(["retry", "back"])
-})
-
-# Step 4: Final Test (no input needed)
-STEP_FINAL_TEST_SCHEMA = vol.Schema({})
-
+# Step 3: API Key Failed (only back button) or Success (only submit button)
+STEP_RETRY_API_KEY_SCHEMA = vol.Schema({})
 
 class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Hue Cleaner."""
@@ -87,8 +81,8 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             if api_key:
                 self.api_key = api_key
                 return self.async_show_form(
-                    step_id="final_test",
-                    data_schema=STEP_FINAL_TEST_SCHEMA,
+                    step_id="retry_api_key",
+                    data_schema=STEP_RETRY_API_KEY_SCHEMA,
                     description_placeholders={"api_key": api_key}
                 )
             else:
@@ -100,60 +94,30 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema=STEP_API_KEY_DATA_SCHEMA
         )
 
-    async def async_step_final_test(
-        self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
-        """Step 4: Final test and create entry."""
-        if user_input is not None:
-            # Perform final test
-            _LOGGER.debug("Testing API key %s for IP %s", self.api_key, self.hue_ip)
-            if await self._test_api_key(self.hue_ip, self.api_key):
-                _LOGGER.debug("API key test successful")
-                return self.async_create_entry(
-                    title=f"Hue Cleaner ({self.hue_ip})",
-                    data={
-                        CONF_HOST: self.hue_ip,
-                        "api_key": self.api_key,
-                    },
-                )
-            else:
-                _LOGGER.debug("API key test failed")
-                return self.async_show_form(
-                    step_id="final_test",
-                    data_schema=STEP_FINAL_TEST_SCHEMA,
-                    errors={"base": "final_test_failed"}
-                )
-
-        return self.async_show_form(
-            step_id="final_test",
-            data_schema=STEP_FINAL_TEST_SCHEMA
-        )
 
     async def async_step_retry_api_key(
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
-        """Step 3: Retry API key generation."""
+        """Step 3: API Key failed, show back button."""
         if user_input is not None:
-            action = user_input.get("action", "")
-            if action == "back":
-                return await self.async_step_api_key()
-            elif action == "retry":
-                # Try to get API key from hub again
-                api_key = await self._fetch_api_key(self.hue_ip)
-                if api_key:
-                    self.api_key = api_key
-                    return self.async_show_form(
-                        step_id="final_test",
-                        data_schema=STEP_FINAL_TEST_SCHEMA,
-                        description_placeholders={"api_key": api_key}
-                    )
-                else:
-                    # Still no API key, show error
-                    return self.async_show_form(
-                        step_id="retry_api_key",
-                        data_schema=STEP_RETRY_API_KEY_SCHEMA,
-                        errors={"base": "api_key_timeout"}
-                    )
+            # Try to get API key from hub again
+            api_key = await self._fetch_api_key(self.hue_ip)
+            if api_key:
+                self.api_key = api_key
+                # Success - show the API key
+                return self.async_show_form(
+                    step_id="retry_api_key",
+                    data_schema=STEP_RETRY_API_KEY_SCHEMA,
+                    description_placeholders={"api_key": api_key}
+                )
+            else:
+                # Still no API key - show back button only
+                return self.async_show_form(
+                    step_id="retry_api_key",
+                    data_schema=STEP_RETRY_API_KEY_SCHEMA,
+                    errors={"base": "api_key_timeout"},
+                    description_placeholders={"show_back_only": True}
+                )
 
         return self.async_show_form(
             step_id="retry_api_key",

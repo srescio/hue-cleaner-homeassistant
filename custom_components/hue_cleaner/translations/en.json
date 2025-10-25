@@ -13,15 +13,10 @@
         "description": "1. Go to your Hue Hub\n2. Press the physical button on the device\n3. Come back here and click 'Submit'\n\nThe API key will be automatically retrieved and saved."
       },
       "retry_api_key": {
-        "title": "Retry API Key",
-        "description": "The API key was not received. This usually means:\n\n1. The button was not pressed on the Hue Hub\n2. The button was pressed too long ago\n3. There was a network issue\n\nPlease try again:",
-        "data": {
-          "action": {
-            "options": {
-              "retry": "Retry",
-              "back": "Back"
-            }
-          }
+        "title": "API Key Status",
+        "description": "{api_key, select, undefined {The API key was not received. This usually means:\n\n1. The button was not pressed on the Hue Hub\n2. The button was pressed too long ago\n3. There was a network issue} other {API key received: {api_key}\n\nClick Done to complete setup}}",
+        "description_placeholders": {
+          "api_key": "undefined"
         }
       },
       "final_test": {
