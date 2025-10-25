@@ -72,7 +72,11 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="user",
             data_schema=STEP_USER_DATA_SCHEMA,
-            errors=errors
+            errors=errors,
+            description_placeholders={
+                "instructions": self.hass.config_entries.async_get_translations(self.hass.config.language)["config"]["instructions"]["find_ip"],
+                "example": self.hass.config_entries.async_get_translations(self.hass.config.language)["config"]["instructions"]["example_ip"]
+            }
         )
 
     async def async_step_connection_test(
@@ -93,7 +97,11 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="connection_test",
-            data_schema=STEP_CONNECTION_TEST_SCHEMA
+            data_schema=STEP_CONNECTION_TEST_SCHEMA,
+            description_placeholders={
+                "hue_ip": self.hue_ip,
+                "status": self.hass.config_entries.async_get_translations(self.hass.config.language)["config"]["status"]["testing_connection"]
+            }
         )
 
     async def async_step_api_instructions(
@@ -105,7 +113,11 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="api_instructions",
-            data_schema=STEP_API_INSTRUCTIONS_SCHEMA
+            data_schema=STEP_API_INSTRUCTIONS_SCHEMA,
+            description_placeholders={
+                "hue_ip": self.hue_ip,
+                "status": self.hass.config_entries.async_get_translations(self.hass.config.language)["config"]["status"]["connection_successful"]
+            }
         )
 
     async def async_step_api_key(
@@ -128,7 +140,11 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="api_key",
             data_schema=STEP_API_KEY_DATA_SCHEMA,
-            errors=errors
+            errors=errors,
+            description_placeholders={
+                "hue_ip": self.hue_ip,
+                "instructions": self.hass.config_entries.async_get_translations(self.hass.config.language)["config"]["instructions"]["api_key_steps"]
+            }
         )
 
     async def async_step_final_test(
@@ -154,7 +170,11 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="final_test",
-            data_schema=STEP_FINAL_TEST_SCHEMA
+            data_schema=STEP_FINAL_TEST_SCHEMA,
+            description_placeholders={
+                "hue_ip": self.hue_ip,
+                "status": self.hass.config_entries.async_get_translations(self.hass.config.language)["config"]["status"]["final_test_progress"]
+            }
         )
 
     def _is_valid_ip(self, ip: str) -> bool:

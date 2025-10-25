@@ -36,6 +36,16 @@
     },
     "abort": {
       "already_configured": "Hue Cleaner è già configurato per questo Hue Hub."
+    },
+    "status": {
+      "testing_connection": "🔄 Test connessione in corso...",
+      "connection_successful": "✅ Connessione riuscita!",
+      "final_test_progress": "✅ Test finale in corso..."
+    },
+    "instructions": {
+      "find_ip": "Per trovare l'IP del tuo Hue Hub:\n1. Apri l'app Philips Hue sul tuo telefono\n2. Vai su Impostazioni → Bridge\n3. L'IP sarà mostrato lì",
+      "example_ip": "Esempio: 192.168.1.100",
+      "api_key_steps": "1. Vai al tuo Hue Hub\n2. Premi il pulsante fisico\n3. Torna qui e inserisci la chiave"
     }
   }
 }
