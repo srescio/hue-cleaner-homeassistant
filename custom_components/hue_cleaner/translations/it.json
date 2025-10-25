@@ -2,10 +2,10 @@
   "config": {
     "step": {
       "user": {
-        "title": "Hue Cleaner Setup",
-        "description": "Enter your Philips Hue Hub IP address\n\n{instructions}\n\n{example}",
+        "title": "Configurazione Hue Cleaner",
+        "description": "Inserisci l'indirizzo IP del tuo Hue Hub\n\n{instructions}\n\n{example}",
         "data": {
-          "host": "Hue Hub IP Address"
+          "host": "Indirizzo IP Hue Hub"
         }
       },
       "connection_test": {

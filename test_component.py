@@ -40,7 +40,8 @@ def test_structure():
         "custom_components/hue_cleaner/sensor.py",
         "custom_components/hue_cleaner/services.py",
         "custom_components/hue_cleaner/services.yaml",
-        "custom_components/hue_cleaner/strings.json",
+        "custom_components/hue_cleaner/translations/en.json",
+        "custom_components/hue_cleaner/translations/it.json",
         "hacs.json",
         "README.md",
     ]
@@ -91,41 +92,46 @@ def test_config_flow_steps():
         print(f"❌ Error reading {config_flow_path}: {e}")
         return False
 
-def test_strings_json():
-    """Test that strings.json has all required step descriptions."""
-    strings_path = "custom_components/hue_cleaner/strings.json"
+def test_translations():
+    """Test that translation files have all required step descriptions."""
+    translation_files = [
+        "custom_components/hue_cleaner/translations/en.json",
+        "custom_components/hue_cleaner/translations/it.json"
+    ]
     
-    if not os.path.exists(strings_path):
-        print(f"❌ {strings_path} not found")
-        return False
+    required_steps = [
+        "user", "connection_test", "api_instructions", 
+        "api_key", "final_test"
+    ]
     
-    try:
-        with open(strings_path, 'r') as f:
-            strings = json.load(f)
-        
-        required_steps = [
-            "user", "connection_test", "api_instructions", 
-            "api_key", "final_test"
-        ]
-        
-        missing_steps = []
-        for step in required_steps:
-            if step not in strings.get("config", {}).get("step", {}):
-                missing_steps.append(step)
-        
-        if missing_steps:
-            print(f"❌ Missing string descriptions for steps: {missing_steps}")
+    for translation_path in translation_files:
+        if not os.path.exists(translation_path):
+            print(f"❌ {translation_path} not found")
             return False
         
-        print(f"✅ {strings_path} has all required step descriptions")
-        return True
-        
-    except json.JSONDecodeError as e:
-        print(f"❌ {strings_path} is not valid JSON: {e}")
-        return False
-    except Exception as e:
-        print(f"❌ Error reading {strings_path}: {e}")
-        return False
+        try:
+            with open(translation_path, 'r') as f:
+                translations = json.load(f)
+            
+            missing_steps = []
+            for step in required_steps:
+                if step not in translations.get("config", {}).get("step", {}):
+                    missing_steps.append(step)
+            
+            if missing_steps:
+                print(f"❌ Missing translations for steps in {translation_path}: {missing_steps}")
+                return False
+            
+            print(f"✅ {translation_path} has all required step descriptions")
+            
+        except json.JSONDecodeError as e:
+            print(f"❌ {translation_path} is not valid JSON: {e}")
+            return False
+        except Exception as e:
+            print(f"❌ Error reading {translation_path}: {e}")
+            return False
+    
+    return True
 
 def test_pytest_structure():
     """Test that pytest test structure exists."""
@@ -156,7 +162,7 @@ def main():
         ("File Structure", test_structure),
         ("Manifest", test_manifest),
         ("Config Flow Steps", test_config_flow_steps),
-        ("Strings JSON", test_strings_json),
+        ("Translations", test_translations),
         ("Pytest Structure", test_pytest_structure),
     ]
     

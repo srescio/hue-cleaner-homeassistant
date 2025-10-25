@@ -74,11 +74,11 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema=STEP_USER_DATA_SCHEMA,
             errors=errors,
             description_placeholders={
-                "instructions": "Per trovare l'IP del tuo Hue Hub:\n"
-                              "1. Apri l'app Philips Hue sul telefono\n"
-                              "2. Vai su Impostazioni → Bridge\n"
-                              "3. L'IP sarà mostrato lì",
-                "example": "Esempio: 192.168.1.100"
+                "instructions": "To find your Hue Hub IP:\n"
+                              "1. Open the Philips Hue app on your phone\n"
+                              "2. Go to Settings → Bridge\n"
+                              "3. The IP will be shown there",
+                "example": "Example: 192.168.1.100"
             }
         )
 
@@ -98,7 +98,7 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     errors={"base": "cannot_connect"},
                     description_placeholders={
                         "hue_ip": self.hue_ip,
-                        "status": "❌ Connessione fallita"
+                        "status": "❌ Connection failed"
                     }
                 )
 
@@ -107,7 +107,7 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema=STEP_CONNECTION_TEST_SCHEMA,
             description_placeholders={
                 "hue_ip": self.hue_ip,
-                "status": "🔄 Testando connessione..."
+                "status": "🔄 Testing connection..."
             }
         )
 
@@ -123,7 +123,7 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema=STEP_API_INSTRUCTIONS_SCHEMA,
             description_placeholders={
                 "hue_ip": self.hue_ip,
-                "status": "✅ Connessione riuscita!"
+                "status": "✅ Connection successful!"
             }
         )
 
@@ -150,9 +150,9 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             errors=errors,
             description_placeholders={
                 "hue_ip": self.hue_ip,
-                "instructions": "1. Vai al tuo Hue Hub\n"
-                              "2. Premi il pulsante fisico\n"
-                              "3. Torna qui e inserisci la chiave"
+                "instructions": "1. Go to your Hue Hub\n"
+                              "2. Press the physical button\n"
+                              "3. Come back here and enter the key"
             }
         )
 
@@ -182,7 +182,7 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema=STEP_FINAL_TEST_SCHEMA,
             description_placeholders={
                 "hue_ip": self.hue_ip,
-                "status": "✅ Test finale in corso..."
+                "status": "✅ Final test in progress..."
             }
         )
 
