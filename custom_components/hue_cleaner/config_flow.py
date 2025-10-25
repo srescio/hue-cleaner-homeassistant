@@ -30,8 +30,7 @@ STEP_API_KEY_DATA_SCHEMA = vol.Schema({})
 
 # Step 3: Retry API Key (with back button)
 STEP_RETRY_API_KEY_SCHEMA = vol.Schema({
-    vol.Optional("retry"): bool,
-    vol.Optional("back"): bool,
+    vol.Optional("action", default=""): vol.In(["retry", "back"])
 })
 
 # Step 4: Final Test (no input needed)
@@ -87,7 +86,11 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             api_key = await self._fetch_api_key(self.hue_ip)
             if api_key:
                 self.api_key = api_key
-                return await self.async_step_final_test()
+                return self.async_show_form(
+                    step_id="final_test",
+                    data_schema=STEP_FINAL_TEST_SCHEMA,
+                    description_placeholders={"api_key": api_key}
+                )
             else:
                 # No API key received, offer to retry
                 return await self.async_step_retry_api_key()
@@ -131,17 +134,19 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     ) -> FlowResult:
         """Step 3: Retry API key generation."""
         if user_input is not None:
-            # Check if user wants to go back
-            if user_input.get("back"):
+            action = user_input.get("action", "")
+            if action == "back":
                 return await self.async_step_api_key()
-            
-            # Check if user wants to retry
-            if user_input.get("retry"):
+            elif action == "retry":
                 # Try to get API key from hub again
                 api_key = await self._fetch_api_key(self.hue_ip)
                 if api_key:
                     self.api_key = api_key
-                    return await self.async_step_final_test()
+                    return self.async_show_form(
+                        step_id="final_test",
+                        data_schema=STEP_FINAL_TEST_SCHEMA,
+                        description_placeholders={"api_key": api_key}
+                    )
                 else:
                     # Still no API key, show error
                     return self.async_show_form(

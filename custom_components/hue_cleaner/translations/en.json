@@ -16,13 +16,17 @@
         "title": "Retry API Key",
         "description": "The API key was not received. This usually means:\n\n1. The button was not pressed on the Hue Hub\n2. The button was pressed too long ago\n3. There was a network issue\n\nPlease try again:",
         "data": {
-          "retry": "Retry",
-          "back": "Back to previous step"
+          "action": {
+            "options": {
+              "retry": "Retry",
+              "back": "Back"
+            }
+          }
         }
       },
       "final_test": {
         "title": "Configuration Complete",
-        "description": "The component is ready to use!"
+        "description": "API key received: {api_key}\n\nThe component is ready to use!"
       }
     },
     "error": {

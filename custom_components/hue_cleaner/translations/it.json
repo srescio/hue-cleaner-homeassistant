@@ -16,13 +16,17 @@
         "title": "Riprova API Key",
         "description": "La chiave API non è stata ricevuta. Questo di solito significa:\n\n1. Il pulsante non è stato premuto sull'Hue Hub\n2. Il pulsante è stato premuto troppo tempo fa\n3. C'è stato un problema di rete\n\nRiprova:",
         "data": {
-          "retry": "Riprova",
-          "back": "Torna al step precedente"
+          "action": {
+            "options": {
+              "retry": "Riprova",
+              "back": "Indietro"
+            }
+          }
         }
       },
       "final_test": {
         "title": "Configurazione Completata",
-        "description": "Il componente è pronto per l'uso!"
+        "description": "Chiave API ricevuta: {api_key}\n\nIl componente è pronto per l'uso!"
       }
     },
     "error": {
