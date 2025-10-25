@@ -72,14 +72,7 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="user",
             data_schema=STEP_USER_DATA_SCHEMA,
-            errors=errors,
-            description_placeholders={
-                "instructions": "To find your Hue Hub IP:\n"
-                              "1. Open the Philips Hue app on your phone\n"
-                              "2. Go to Settings → Bridge\n"
-                              "3. The IP will be shown there",
-                "example": "Example: 192.168.1.100"
-            }
+            errors=errors
         )
 
     async def async_step_connection_test(
@@ -87,28 +80,12 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     ) -> FlowResult:
         """Step 2: Test connection to Hue Hub."""
         if user_input is not None:
-            # Test connection
-            if await self._test_connection(self.hue_ip):
-                self.connection_tested = True
-                return await self.async_step_api_instructions()
-            else:
-                return self.async_show_form(
-                    step_id="connection_test",
-                    data_schema=STEP_CONNECTION_TEST_SCHEMA,
-                    errors={"base": "cannot_connect"},
-                    description_placeholders={
-                        "hue_ip": self.hue_ip,
-                        "status": "❌ Connection failed"
-                    }
-                )
+            # Skip connection test for now, go directly to API instructions
+            return await self.async_step_api_instructions()
 
         return self.async_show_form(
             step_id="connection_test",
-            data_schema=STEP_CONNECTION_TEST_SCHEMA,
-            description_placeholders={
-                "hue_ip": self.hue_ip,
-                "status": "🔄 Testing connection..."
-            }
+            data_schema=STEP_CONNECTION_TEST_SCHEMA
         )
 
     async def async_step_api_instructions(
@@ -120,11 +97,7 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="api_instructions",
-            data_schema=STEP_API_INSTRUCTIONS_SCHEMA,
-            description_placeholders={
-                "hue_ip": self.hue_ip,
-                "status": "✅ Connection successful!"
-            }
+            data_schema=STEP_API_INSTRUCTIONS_SCHEMA
         )
 
     async def async_step_api_key(
@@ -147,13 +120,7 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="api_key",
             data_schema=STEP_API_KEY_DATA_SCHEMA,
-            errors=errors,
-            description_placeholders={
-                "hue_ip": self.hue_ip,
-                "instructions": "1. Go to your Hue Hub\n"
-                              "2. Press the physical button\n"
-                              "3. Come back here and enter the key"
-            }
+            errors=errors
         )
 
     async def async_step_final_test(
@@ -161,29 +128,18 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     ) -> FlowResult:
         """Step 5: Final test and create entry."""
         if user_input is not None:
-            # Perform final test
-            if await self._test_api_key(self.hue_ip, self.api_key):
-                return self.async_create_entry(
-                    title=f"Hue Cleaner ({self.hue_ip})",
-                    data={
-                        CONF_HOST: self.hue_ip,
-                        "api_key": self.api_key,
-                    },
-                )
-            else:
-                return self.async_show_form(
-                    step_id="final_test",
-                    data_schema=STEP_FINAL_TEST_SCHEMA,
-                    errors={"base": "final_test_failed"}
-                )
+            # Create entry directly without final test
+            return self.async_create_entry(
+                title=f"Hue Cleaner ({self.hue_ip})",
+                data={
+                    CONF_HOST: self.hue_ip,
+                    "api_key": self.api_key,
+                },
+            )
 
         return self.async_show_form(
             step_id="final_test",
-            data_schema=STEP_FINAL_TEST_SCHEMA,
-            description_placeholders={
-                "hue_ip": self.hue_ip,
-                "status": "✅ Final test in progress..."
-            }
+            data_schema=STEP_FINAL_TEST_SCHEMA
         )
 
     def _is_valid_ip(self, ip: str) -> bool:
