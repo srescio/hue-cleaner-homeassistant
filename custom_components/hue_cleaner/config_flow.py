@@ -183,7 +183,7 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Fetch API key from Hue Hub (user must press button first)."""
         try:
             session = aiohttp_client.async_get_clientsession(self.hass)
-            url = f"https://{hue_ip}/api"
+            url = f"http://{hue_ip}/api"
             
             payload = {
                 "devicetype": "hue_cleaner#homeassistant",

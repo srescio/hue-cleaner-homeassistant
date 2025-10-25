@@ -11,7 +11,7 @@ DEFAULT_SCAN_INTERVAL = 7200  # 2 hours in seconds
 DEFAULT_TIMEOUT = 10
 
 # API endpoints
-HUE_API_BASE = "https://{ip}/api"
+HUE_API_BASE = "http://{ip}/api"
 HUE_ENTERTAINMENT_API = "https://{ip}/clip/v2/resource/entertainment_configuration"
 
 # Entertainment area patterns
