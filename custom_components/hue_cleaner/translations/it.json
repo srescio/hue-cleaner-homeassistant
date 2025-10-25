@@ -3,29 +3,29 @@
     "step": {
       "user": {
         "title": "Configurazione Hue Cleaner",
-        "description": "Inserisci l'indirizzo IP del tuo Hue Hub\n\n{instructions}\n\n{example}",
+        "description": "Inserisci l'indirizzo IP del tuo Hue Hub\n\nPer trovare l'IP del tuo Hue Hub:\n1. Apri l'app Philips Hue sul tuo telefono\n2. Vai su Impostazioni → Bridge\n3. L'IP sarà mostrato lì\n\nEsempio: 192.168.1.100",
         "data": {
           "host": "Indirizzo IP Hue Hub"
         }
       },
       "connection_test": {
         "title": "Test Connessione",
-        "description": "IP: {hue_ip}\n\n{status}\n\nClicca 'Avanti' per testare la connessione al tuo Hue Hub."
+        "description": "Clicca 'Avanti' per testare la connessione al tuo Hue Hub."
       },
       "api_instructions": {
         "title": "Configurazione API Key",
-        "description": "IP: {hue_ip}\n\n{status}\n\nOra devi configurare l'API key per comunicare con il tuo Hue Hub."
+        "description": "Ora devi configurare l'API key per comunicare con il tuo Hue Hub."
       },
       "api_key": {
         "title": "Inserisci API Key",
-        "description": "IP: {hue_ip}\n\n{instructions}\n\nLa chiave apparirà dopo aver premuto il pulsante sull'hub.",
+        "description": "1. Vai al tuo Hue Hub\n2. Premi il pulsante fisico\n3. Torna qui e inserisci la chiave\n\nLa chiave apparirà dopo aver premuto il pulsante sull'hub.",
         "data": {
           "api_key": "API Key"
         }
       },
       "final_test": {
         "title": "Configurazione Completata",
-        "description": "IP: {hue_ip}\n\n{status}\n\nIl componente è pronto per l'uso!"
+        "description": "Il componente è pronto per l'uso!"
       }
     },
     "error": {
