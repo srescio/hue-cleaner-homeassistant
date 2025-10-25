@@ -5,6 +5,7 @@
   "config_flow": true,
   "dependencies": [],
   "documentation": "https://github.com/srescio/hue-cleaner-homeassistant",
+  "icon": "icons/icon.png",
   "integration_type": "service",
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/srescio/hue-cleaner-homeassistant/issues",
