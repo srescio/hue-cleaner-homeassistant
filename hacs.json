@@ -6,5 +6,5 @@
   "homeassistant": "2023.1.0",
   "branch": "main",
   "render_readme": true,
-  "icon": "custom_components/hue_cleaner/icon.png"
+  "icon": "icon.png"
 }
