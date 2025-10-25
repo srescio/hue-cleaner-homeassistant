@@ -103,7 +103,9 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Step 4: Final test and create entry."""
         if user_input is not None:
             # Perform final test
+            _LOGGER.debug("Testing API key %s for IP %s", self.api_key, self.hue_ip)
             if await self._test_api_key(self.hue_ip, self.api_key):
+                _LOGGER.debug("API key test successful")
                 return self.async_create_entry(
                     title=f"Hue Cleaner ({self.hue_ip})",
                     data={
@@ -112,6 +114,7 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     },
                 )
             else:
+                _LOGGER.debug("API key test failed")
                 return self.async_show_form(
                     step_id="final_test",
                     data_schema=STEP_FINAL_TEST_SCHEMA,
@@ -251,14 +254,18 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             async with session.post(url, json=payload, ssl=False) as response:
                 if response.status == 200:
                     data = await response.json()
+                    _LOGGER.debug("Hue API response: %s", data)
                     if data and len(data) > 0:
                         result = data[0]
                         if "success" in result and "username" in result["success"]:
+                            _LOGGER.debug("Got API key: %s", result["success"]["username"])
                             return result["success"]["username"]
                         elif "error" in result:
                             # Error 101 means "link button not pressed"
                             if result["error"].get("type") == 101:
+                                _LOGGER.debug("Link button not pressed (error 101)")
                                 return None  # Continue polling
+                            _LOGGER.debug("Unexpected error: %s", result["error"])
         except Exception:
             pass
         return None
@@ -269,12 +276,18 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             session = aiohttp_client.async_get_clientsession(self.hass)
             url = f"http://{hue_ip}/clip/v2/resource/entertainment_configuration"
             
+            _LOGGER.debug("Testing API key at URL: %s", url)
             async with session.get(
                 url,
                 headers={"hue-application-key": api_key},
                 timeout=aiohttp.ClientTimeout(total=10),
             ) as response:
+                _LOGGER.debug("API test response status: %s", response.status)
+                if response.status != 200:
+                    response_text = await response.text()
+                    _LOGGER.debug("API test response body: %s", response_text)
                 return response.status == 200
-        except Exception:
+        except Exception as e:
+            _LOGGER.debug("API test error: %s", str(e))
             pass
         return False
