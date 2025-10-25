@@ -3,26 +3,39 @@
     "step": {
       "user": {
         "title": "Hue Cleaner Setup",
-        "description": "Enter your Philips Hue Hub IP address",
+        "description": "Enter your Philips Hue Hub IP address\n\n{instructions}\n\n{example}",
         "data": {
           "host": "Hue Hub IP Address"
         }
       },
+      "connection_test": {
+        "title": "Test Connessione",
+        "description": "IP: {hue_ip}\n\n{status}\n\nClicca 'Avanti' per testare la connessione al tuo Hue Hub."
+      },
+      "api_instructions": {
+        "title": "Configurazione API Key",
+        "description": "IP: {hue_ip}\n\n{status}\n\nOra devi configurare l'API key per comunicare con il tuo Hue Hub."
+      },
       "api_key": {
-        "title": "API Key Configuration",
-        "description": "Press the button on your Hue Hub, then enter the API key that appears",
+        "title": "Inserisci API Key",
+        "description": "IP: {hue_ip}\n\n{instructions}\n\nLa chiave apparirà dopo aver premuto il pulsante sull'hub.",
         "data": {
           "api_key": "API Key"
         }
+      },
+      "final_test": {
+        "title": "Configurazione Completata",
+        "description": "IP: {hue_ip}\n\n{status}\n\nIl componente è pronto per l'uso!"
       }
     },
     "error": {
-      "cannot_connect": "Unable to connect to Hue Hub. Please check the IP address and ensure the hub is powered on and connected to your network.",
-      "invalid_ip": "Invalid IP address format. Please enter a valid IP address.",
-      "invalid_api_key": "Invalid API key. Please press the button on your Hue Hub and try again."
+      "cannot_connect": "Impossibile connettersi al Hue Hub. Verifica l'indirizzo IP e assicurati che l'hub sia acceso e connesso alla rete.",
+      "invalid_ip": "Formato IP non valido. Inserisci un indirizzo IP valido.",
+      "invalid_api_key": "API key non valida. Premi il pulsante sul tuo Hue Hub e riprova.",
+      "final_test_failed": "Test finale fallito. Verifica la connessione e riprova."
     },
     "abort": {
-      "already_configured": "Hue Cleaner is already configured for this Hue Hub."
+      "already_configured": "Hue Cleaner è già configurato per questo Hue Hub."
     }
   }
 }
