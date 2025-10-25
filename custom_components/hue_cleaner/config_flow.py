@@ -24,20 +24,16 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
     }
 )
 
-# Step 2: Connection Test (no input needed)
-STEP_CONNECTION_TEST_SCHEMA = vol.Schema({})
+# Step 2: API Key Generation (no input needed)
+STEP_API_KEY_DATA_SCHEMA = vol.Schema({})
 
-# Step 3: API Instructions (no input needed)
-STEP_API_INSTRUCTIONS_SCHEMA = vol.Schema({})
+# Step 3: Retry API Key (with back button)
+STEP_RETRY_API_KEY_SCHEMA = vol.Schema({
+    vol.Optional("retry"): bool,
+    vol.Optional("back"): bool,
+})
 
-# Step 4: API Key Input
-STEP_API_KEY_DATA_SCHEMA = vol.Schema(
-    {
-        vol.Required("api_key"): str,
-    }
-)
-
-# Step 5: Final Test (no input needed)
+# Step 4: Final Test (no input needed)
 STEP_FINAL_TEST_SCHEMA = vol.Schema({})
 
 
@@ -66,8 +62,12 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             if not self._is_valid_ip(hue_ip):
                 errors["base"] = "invalid_ip"
             else:
-                self.hue_ip = hue_ip
-                return await self.async_step_connection_test()
+                # Test connection to Hue Hub
+                if await self._test_connection(hue_ip):
+                    self.hue_ip = hue_ip
+                    return await self.async_step_api_key()
+                else:
+                    errors["base"] = "cannot_connect"
 
         return self.async_show_form(
             step_id="user",
@@ -75,66 +75,31 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             errors=errors
         )
 
-    async def async_step_connection_test(
-        self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
-        """Step 2: Test connection to Hue Hub."""
-        if user_input is not None:
-            # Test connection
-            if await self._test_connection(self.hue_ip):
-                self.connection_tested = True
-                return await self.async_step_api_instructions()
-            else:
-                return self.async_show_form(
-                    step_id="connection_test",
-                    data_schema=STEP_CONNECTION_TEST_SCHEMA,
-                    errors={"base": "cannot_connect"}
-                )
 
-        return self.async_show_form(
-            step_id="connection_test",
-            data_schema=STEP_CONNECTION_TEST_SCHEMA
-        )
-
-    async def async_step_api_instructions(
-        self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
-        """Step 3: Show API key instructions."""
-        if user_input is not None:
-            return await self.async_step_api_key()
-
-        return self.async_show_form(
-            step_id="api_instructions",
-            data_schema=STEP_API_INSTRUCTIONS_SCHEMA
-        )
 
     async def async_step_api_key(
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
-        """Step 4: Handle API key input."""
-        errors: dict[str, str] = {}
-
+        """Step 2: Handle API key generation."""
         if user_input is not None:
-            api_key = user_input["api_key"]
-            
-            # Test API key
-            if await self._test_api_key(self.hue_ip, api_key):
+            # Try to get API key from hub
+            api_key = await self._fetch_api_key(self.hue_ip)
+            if api_key:
                 self.api_key = api_key
-                self.api_key_tested = True
                 return await self.async_step_final_test()
             else:
-                errors["base"] = "invalid_api_key"
+                # No API key received, offer to retry
+                return await self.async_step_retry_api_key()
 
         return self.async_show_form(
             step_id="api_key",
-            data_schema=STEP_API_KEY_DATA_SCHEMA,
-            errors=errors
+            data_schema=STEP_API_KEY_DATA_SCHEMA
         )
 
     async def async_step_final_test(
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
-        """Step 5: Final test and create entry."""
+        """Step 4: Final test and create entry."""
         if user_input is not None:
             # Perform final test
             if await self._test_api_key(self.hue_ip, self.api_key):
@@ -155,6 +120,35 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="final_test",
             data_schema=STEP_FINAL_TEST_SCHEMA
+        )
+
+    async def async_step_retry_api_key(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Step 3: Retry API key generation."""
+        if user_input is not None:
+            # Check if user wants to go back
+            if user_input.get("back"):
+                return await self.async_step_api_key()
+            
+            # Check if user wants to retry
+            if user_input.get("retry"):
+                # Try to get API key from hub again
+                api_key = await self._fetch_api_key(self.hue_ip)
+                if api_key:
+                    self.api_key = api_key
+                    return await self.async_step_final_test()
+                else:
+                    # Still no API key, show error
+                    return self.async_show_form(
+                        step_id="retry_api_key",
+                        data_schema=STEP_RETRY_API_KEY_SCHEMA,
+                        errors={"base": "api_key_timeout"}
+                    )
+
+        return self.async_show_form(
+            step_id="retry_api_key",
+            data_schema=STEP_RETRY_API_KEY_SCHEMA
         )
 
     def _is_valid_ip(self, ip: str) -> bool:
@@ -184,6 +178,32 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         except Exception:
             pass
         return False
+
+    async def _fetch_api_key(self, hue_ip: str) -> str | None:
+        """Fetch API key from Hue Hub (user must press button first)."""
+        try:
+            session = aiohttp_client.async_get_clientsession(self.hass)
+            url = f"https://{hue_ip}/api"
+            
+            payload = {
+                "devicetype": "hue_cleaner#homeassistant",
+                "generateclientkey": True
+            }
+            
+            async with session.post(url, json=payload, ssl=False) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    if data and len(data) > 0:
+                        result = data[0]
+                        if "success" in result and "username" in result["success"]:
+                            return result["success"]["username"]
+                        elif "error" in result:
+                            # Error 101 means "link button not pressed"
+                            if result["error"].get("type") == 101:
+                                return None  # Continue polling
+        except Exception:
+            pass
+        return None
 
     async def _test_api_key(self, hue_ip: str, api_key: str) -> bool:
         """Test API key validity."""

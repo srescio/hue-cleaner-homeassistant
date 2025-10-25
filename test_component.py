@@ -70,9 +70,8 @@ def test_config_flow_steps():
         
         required_steps = [
             "async_step_user",
-            "async_step_connection_test", 
-            "async_step_api_instructions",
             "async_step_api_key",
+            "async_step_retry_api_key",
             "async_step_final_test"
         ]
         
@@ -100,8 +99,7 @@ def test_translations():
     ]
     
     required_steps = [
-        "user", "connection_test", "api_instructions", 
-        "api_key", "final_test"
+        "user", "api_key", "retry_api_key", "final_test"
     ]
     
     for translation_path in translation_files:

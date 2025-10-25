@@ -3,24 +3,21 @@
     "step": {
       "user": {
         "title": "Hue Cleaner Setup",
-        "description": "Enter your Philips Hue Hub IP address\n\nTo find your Hue Hub IP:\n1. Open the Philips Hue app on your phone\n2. Go to Settings → Bridge\n3. The IP will be shown there\n\nExample: 192.168.1.100",
+        "description": "Enter your Philips Hue Hub IP address\n\nTo find your Hue Hub IP:\n1. Open the Philips Hue app on your phone\n2. Go to Settings → Bridge\n3. The IP will be shown there\n\nExample: 192.168.0.100",
         "data": {
           "host": "Hue Hub IP Address"
         }
       },
-      "connection_test": {
-        "title": "Connection Test",
-        "description": "Click 'Next' to test connection to your Hue Hub."
-      },
-      "api_instructions": {
-        "title": "API Key Configuration",
-        "description": "Now you need to configure the API key to communicate with your Hue Hub."
-      },
       "api_key": {
         "title": "Enter API Key",
-        "description": "1. Go to your Hue Hub\n2. Press the physical button\n3. Come back here and enter the key\n\nThe key will appear after pressing the button on the hub.",
+        "description": "1. Go to your Hue Hub\n2. Press the physical button on the device\n3. Come back here and click 'Submit'\n\nThe API key will be automatically retrieved and saved."
+      },
+      "retry_api_key": {
+        "title": "Retry API Key",
+        "description": "The API key was not received. This usually means:\n\n1. The button was not pressed on the Hue Hub\n2. The button was pressed too long ago\n3. There was a network issue\n\nPlease try again:",
         "data": {
-          "api_key": "API Key"
+          "retry": "Retry",
+          "back": "Back to previous step"
         }
       },
       "final_test": {
@@ -32,7 +29,8 @@
       "cannot_connect": "Unable to connect to Hue Hub. Please check the IP address and ensure the hub is powered on and connected to your network.",
       "invalid_ip": "Invalid IP address format. Please enter a valid IP address.",
       "invalid_api_key": "Invalid API key. Please press the button on your Hue Hub and try again.",
-      "final_test_failed": "Final test failed. Please check the connection and try again."
+      "final_test_failed": "Final test failed. Please check the connection and try again.",
+      "api_key_timeout": "API key not received. Please press the button on your Hue Hub and try again."
     },
     "abort": {
       "already_configured": "Hue Cleaner is already configured for this Hue Hub."
