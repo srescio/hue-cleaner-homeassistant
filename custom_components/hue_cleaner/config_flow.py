@@ -31,6 +31,7 @@ STEP_API_KEY_DATA_SCHEMA = vol.Schema({})
 # Step 3: API Key Failed (only back button) or Success (only submit button)
 STEP_RETRY_API_KEY_SCHEMA = vol.Schema({})
 
+
 class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Hue Cleaner."""
 
@@ -51,7 +52,7 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         if user_input is not None:
             hue_ip = user_input[CONF_HOST]
-            
+
             # Validate IP format
             if not self._is_valid_ip(hue_ip):
                 errors["base"] = "invalid_ip"
@@ -69,14 +70,12 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             errors=errors
         )
 
-
-
     async def async_step_api_key(
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
         """Step 2: Handle API key generation."""
         errors: dict[str, str] = {}
-        
+
         if user_input is not None:
             # Try to get API key from hub
             api_key = await self._fetch_api_key(self.hue_ip)
@@ -93,7 +92,6 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema=STEP_API_KEY_DATA_SCHEMA,
             errors=errors
         )
-
 
     async def async_step_confirm_api_key(
         self, user_input: dict[str, Any] | None = None
@@ -123,7 +121,7 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             # Get the issue context
             issue_id = self.context.get("issue_id", "")
-            
+
             if "ip_change" in issue_id:
                 # Handle IP change repair
                 new_ip = user_input.get(CONF_HOST)
@@ -181,13 +179,15 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     async def _test_connection(self, hue_ip: str) -> bool:
         """Test connection to Hue Hub."""
         try:
-            session = aiohttp_client.async_get_clientsession(self.hass)
+            session = aiohttp_client.async_get_clientsession(
+                self.hass, verify_ssl=False)
             url = HUE_API_BASE.format(ip=hue_ip)
-            
+
             async with session.post(
                 url,
                 json={"devicetype": "hue_cleaner#homeassistant"},
                 timeout=aiohttp.ClientTimeout(total=10),
+                ssl=False
             ) as response:
                 if response.status == 200:
                     data = await response.json()
@@ -197,21 +197,23 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         (data[0].get("error", {}).get("type") == 101 or
                          "success" in data[0])
                     )
-        except Exception:
+        except Exception as e:
+            _LOGGER.debug("Connection test failed: %s", str(e))
             pass
         return False
 
     async def _fetch_api_key(self, hue_ip: str) -> str | None:
         """Fetch API key from Hue Hub (user must press button first)."""
         try:
-            session = aiohttp_client.async_get_clientsession(self.hass)
-            url = f"http://{hue_ip}/api"
-            
+            session = aiohttp_client.async_get_clientsession(
+                self.hass, verify_ssl=False)
+            url = f"https://{hue_ip}/api"
+
             payload = {
                 "devicetype": "hue_cleaner#homeassistant",
                 "generateclientkey": True
             }
-            
+
             async with session.post(url, json=payload, ssl=False) as response:
                 if response.status == 200:
                     data = await response.json()
@@ -219,14 +221,17 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     if data and len(data) > 0:
                         result = data[0]
                         if "success" in result and "username" in result["success"]:
-                            _LOGGER.debug("Got API key: %s", result["success"]["username"])
+                            _LOGGER.debug("Got API key: %s",
+                                          result["success"]["username"])
                             return result["success"]["username"]
                         elif "error" in result:
                             # Error 101 means "link button not pressed"
                             if result["error"].get("type") == 101:
-                                _LOGGER.debug("Link button not pressed (error 101)")
+                                _LOGGER.debug(
+                                    "Link button not pressed (error 101)")
                                 return None  # Continue polling
-                            _LOGGER.debug("Unexpected error: %s", result["error"])
+                            _LOGGER.debug("Unexpected error: %s",
+                                          result["error"])
         except Exception:
             pass
         return None
@@ -234,9 +239,10 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     async def _test_api_key(self, hue_ip: str, api_key: str) -> bool:
         """Test API key validity."""
         try:
-            session = aiohttp_client.async_get_clientsession(self.hass)
-            url = f"http://{hue_ip}/clip/v2/resource/entertainment_configuration"
-            
+            session = aiohttp_client.async_get_clientsession(
+                self.hass, verify_ssl=False)
+            url = f"https://{hue_ip}/clip/v2/resource/entertainment_configuration"
+
             _LOGGER.debug("Testing API key at URL: %s", url)
             async with session.get(
                 url,
