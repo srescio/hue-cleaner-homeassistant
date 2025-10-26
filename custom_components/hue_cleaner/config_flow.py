@@ -75,59 +75,46 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
         """Step 2: Handle API key generation."""
+        errors: dict[str, str] = {}
+        
         if user_input is not None:
             # Try to get API key from hub
             api_key = await self._fetch_api_key(self.hue_ip)
             if api_key:
                 self.api_key = api_key
-                return self.async_show_form(
-                    step_id="retry_api_key",
-                    data_schema=STEP_RETRY_API_KEY_SCHEMA,
-                    description_placeholders={"api_key": api_key}
-                )
+                # Success - move to confirmation step
+                return await self.async_step_confirm_api_key()
             else:
-                # No API key received, offer to retry
-                return await self.async_step_retry_api_key()
+                # No API key received, show error on same form
+                errors["base"] = "api_key_timeout"
 
         return self.async_show_form(
             step_id="api_key",
-            data_schema=STEP_API_KEY_DATA_SCHEMA
+            data_schema=STEP_API_KEY_DATA_SCHEMA,
+            errors=errors
         )
 
 
-    async def async_step_retry_api_key(
+    async def async_step_confirm_api_key(
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
-        """Step 3: API Key failed, show back button or success."""
+        """Step 3: Confirm API key and complete setup."""
         if user_input is not None:
-            # If we have an API key stored, user clicked Done - create entry
-            if self.api_key:
-                return self.async_create_entry(
-                    title=f"Hue Cleaner ({self.hue_ip})",
-                    data={
-                        CONF_HOST: self.hue_ip,
-                        "api_key": self.api_key,
-                    }
-                )
-            # Otherwise, user clicked Back - go back to api_key step
-            return await self.async_step_api_key()
+            # User clicked Submit - create entry
+            return self.async_create_entry(
+                title=f"Hue Cleaner ({self.hue_ip})",
+                data={
+                    CONF_HOST: self.hue_ip,
+                    "api_key": self.api_key,
+                }
+            )
 
-        # Show the form - either with error (no API key) or success (with API key)
-        if self.api_key:
-            # Success case - show API key in description
-            return self.async_show_form(
-                step_id="retry_api_key",
-                data_schema=STEP_RETRY_API_KEY_SCHEMA,
-                description_placeholders={"api_key": self.api_key}
-            )
-        else:
-            # Failure case - show error message only (no description placeholders)
-            # The error message is defined in translations under errors.api_key_timeout
-            return self.async_show_form(
-                step_id="retry_api_key",
-                data_schema=STEP_RETRY_API_KEY_SCHEMA,
-                errors={"base": "api_key_timeout"}
-            )
+        # Show success form with API key
+        return self.async_show_form(
+            step_id="confirm_api_key",
+            data_schema=STEP_RETRY_API_KEY_SCHEMA,
+            description_placeholders={"api_key": self.api_key}
+        )
 
     async def async_step_issue_repair(
         self, user_input: dict[str, Any] | None = None

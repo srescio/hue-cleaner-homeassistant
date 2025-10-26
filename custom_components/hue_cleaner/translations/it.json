@@ -9,11 +9,11 @@
         }
       },
       "api_key": {
-        "title": "Inserisci API Key",
+        "title": "Genera API Key",
         "description": "1. Vai al tuo Hue Hub\n2. Premi il pulsante fisico sul dispositivo\n3. Torna qui e clicca 'Invia'\n\nLa chiave API verrà recuperata e salvata automaticamente."
       },
-      "retry_api_key": {
-        "title": "Stato API Key",
+      "confirm_api_key": {
+        "title": "API Key Ricevuta",
         "description": "✅ Chiave API ricevuta con successo:\n\n{api_key}\n\nClicca Invia per completare la configurazione.",
         "description_placeholders": {
           "api_key": "undefined"
