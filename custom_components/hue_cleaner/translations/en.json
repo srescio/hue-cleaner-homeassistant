@@ -44,7 +44,7 @@
         }
       },
       "api_key_expired": {
-        "title": "Hue Cleaner: API Key Expired", 
+        "title": "Hue Cleaner: API Key Expired",
         "description": "The Hue Hub API key has expired. Please reconfigure the integration.",
         "fix_flow": {
           "title": "Reconfigure Hue Cleaner",
@@ -69,6 +69,36 @@
       "find_ip": "To find your Hue Hub IP:\n1. Open the Philips Hue app on your phone\n2. Go to Settings → Bridge\n3. The IP will be shown there",
       "example_ip": "Example: 192.168.1.100",
       "api_key_steps": "1. Go to your Hue Hub\n2. Press the physical button\n3. Come back here and enter the key"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "status": {
+        "name": "Status",
+        "state": {
+          "active": "Active",
+          "error": "Error",
+          "unknown": "Unknown"
+        }
+      }
+    },
+    "button": {
+      "clean_inactive": {
+        "name": "Clean Inactive Areas"
+      },
+      "clean_all": {
+        "name": "Clean All Areas"
+      }
+    }
+  },
+  "services": {
+    "clean_now": {
+      "name": "Clean Inactive Areas",
+      "description": "Manually trigger cleaning of inactive entertainment areas only"
+    },
+    "clean_all": {
+      "name": "Clean All Areas",
+      "description": "Clean all entertainment areas including active ones (use with caution!)"
     }
   }
 }

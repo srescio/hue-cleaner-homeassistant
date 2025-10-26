@@ -47,7 +47,7 @@
         "title": "Hue Cleaner: API Key Scaduta",
         "description": "La chiave API del Hue Hub è scaduta. Riconfigura l'integrazione.",
         "fix_flow": {
-          "title": "Riconfigura Hue Cleaner", 
+          "title": "Riconfigura Hue Cleaner",
           "description": "La chiave API del Hue Hub è scaduta. Premi il pulsante sul tuo Hue Hub e riconfigura."
         }
       },
@@ -69,6 +69,36 @@
       "find_ip": "Per trovare l'IP del tuo Hue Hub:\n1. Apri l'app Philips Hue sul tuo telefono\n2. Vai su Impostazioni → Bridge\n3. L'IP sarà mostrato lì",
       "example_ip": "Esempio: 192.168.1.100",
       "api_key_steps": "1. Vai al tuo Hue Hub\n2. Premi il pulsante fisico\n3. Torna qui e inserisci la chiave"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "status": {
+        "name": "Stato",
+        "state": {
+          "active": "Attivo",
+          "error": "Errore",
+          "unknown": "Sconosciuto"
+        }
+      }
+    },
+    "button": {
+      "clean_inactive": {
+        "name": "Pulisci Aree Inattive"
+      },
+      "clean_all": {
+        "name": "Pulisci Tutte le Aree"
+      }
+    }
+  },
+  "services": {
+    "clean_now": {
+      "name": "Pulisci Aree Inattive",
+      "description": "Attiva manualmente la pulizia delle aree entertainment inattive"
+    },
+    "clean_all": {
+      "name": "Pulisci Tutte le Aree",
+      "description": "Pulisci tutte le aree entertainment incluse quelle attive (usare con cautela!)"
     }
   }
 }

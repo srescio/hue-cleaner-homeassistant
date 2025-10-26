@@ -1,12 +1,7 @@
-clean_entertainment_areas:
-  name: Clean Entertainment Areas
-  description: Manually trigger cleaning of inactive entertainment areas
-  fields:
-    entity_id:
-      name: Entity ID
-      description: The entity ID of the Hue Cleaner sensor
-      required: true
-      selector:
-        entity:
-          domain: sensor
-          device_class: None
+clean_now:
+  name: Clean Inactive Areas
+  description: Manually trigger cleaning of inactive entertainment areas only
+
+clean_all:
+  name: Clean All Areas
+  description: Clean all entertainment areas including active ones (use with caution!)

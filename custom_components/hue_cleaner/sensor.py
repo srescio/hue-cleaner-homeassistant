@@ -18,37 +18,43 @@ async def async_setup_entry(
     """Set up Hue Cleaner sensor based on a config entry."""
     coordinator = hass.data[DOMAIN][config_entry.entry_id]
 
-    async_add_entities([HueCleanerSensor(coordinator)])
+    async_add_entities([HueCleanerSensor(coordinator, config_entry)])
 
 
-class HueCleanerSensor(SensorEntity, CoordinatorEntity):
+class HueCleanerSensor(CoordinatorEntity, SensorEntity):
     """Representation of a Hue Cleaner sensor."""
 
-    def __init__(self, coordinator) -> None:
+    def __init__(self, coordinator, entry: ConfigEntry) -> None:
         """Initialize the sensor."""
         super().__init__(coordinator)
-        self.coordinator = coordinator
-        self._attr_name = "Hue Cleaner"
-        self._attr_unique_id = "hue_cleaner_status"
+        self._attr_unique_id = f"{entry.entry_id}_status"
+        self._attr_has_entity_name = True
+        self._attr_icon = "mdi:broom"
+        self._attr_translation_key = "status"
+        self._entry = entry
 
     @property
-    def name(self) -> str:
-        """Return the name of the sensor."""
-        return self._attr_name
-
-    @property
-    def unique_id(self) -> str:
-        """Return the unique ID of the sensor."""
-        return self._attr_unique_id
+    def device_info(self):
+        """Return device information."""
+        return {
+            "identifiers": {(DOMAIN, self._entry.entry_id)},
+            "name": f"Hue Cleaner ({self.coordinator.hue_ip})",
+            "manufacturer": "Custom",
+            "model": "Hue Cleaner",
+        }
 
     @property
     def native_value(self) -> str:
         """Return the state of the sensor."""
+        if not self.coordinator.data:
+            return "unknown"
         return self.coordinator.data.get("status", "unknown")
 
     @property
     def extra_state_attributes(self) -> dict:
         """Return the state attributes."""
+        if not self.coordinator.data:
+            return {}
         return {
             "cleaned_count": self.coordinator.data.get("cleaned_count", 0),
             "last_clean": self.coordinator.data.get("last_clean"),
