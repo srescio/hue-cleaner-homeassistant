@@ -14,7 +14,7 @@
       },
       "retry_api_key": {
         "title": "API Key Status",
-        "description": "{api_key, select, undefined {The API key was not received. This usually means:\n\n1. The button was not pressed on the Hue Hub\n2. The button was pressed too long ago\n3. There was a network issue} other {API key received: {api_key}\n\nClick Done to complete setup}}",
+        "description": "✅ API key received successfully:\n\n{api_key}\n\nClick Submit to complete the setup.",
         "description_placeholders": {
           "api_key": "undefined"
         }
@@ -29,7 +29,7 @@
       "invalid_ip": "Invalid IP address format. Please enter a valid IP address.",
       "invalid_api_key": "Invalid API key. Please press the button on your Hue Hub and try again.",
       "final_test_failed": "Final test failed. Please check the connection and try again.",
-      "api_key_timeout": "API key not received. Please press the button on your Hue Hub and try again."
+      "api_key_timeout": "API key not received. This usually means:\n• The button was not pressed on the Hue Hub\n• The button was pressed too long ago (press it again)\n• There was a network issue\n\nPlease press the physical button on your Hue Hub and click Submit again."
     },
     "abort": {
       "already_configured": "Hue Cleaner is already configured for this Hue Hub."

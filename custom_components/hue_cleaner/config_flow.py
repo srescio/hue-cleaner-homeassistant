@@ -114,19 +114,18 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         # Show the form - either with error (no API key) or success (with API key)
         if self.api_key:
-            # Success case - show API key
+            # Success case - show API key in description
             return self.async_show_form(
                 step_id="retry_api_key",
                 data_schema=STEP_RETRY_API_KEY_SCHEMA,
                 description_placeholders={"api_key": self.api_key}
             )
         else:
-            # Failure case - show error
-            # Note: api_key must be provided (even as None) for intl select syntax to work
+            # Failure case - show error message only (no description placeholders)
+            # The error message is defined in translations under errors.api_key_timeout
             return self.async_show_form(
                 step_id="retry_api_key",
                 data_schema=STEP_RETRY_API_KEY_SCHEMA,
-                description_placeholders={"api_key": None},
                 errors={"base": "api_key_timeout"}
             )
 
