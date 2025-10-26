@@ -29,6 +29,11 @@ This component solves the issue where Philips TVs with Ambilight + Hue sync crea
 - Philips Hue Hub on the same network
 - Philips TV with Ambilight + Hue sync capability
 
+## Development
+
+1. Open project in VS Code/Cursor and reopen in dev container
+2. Press F5 to start Home Assistant with debugger, then open http://localhost:8123
+
 ## Support
 
 For issues and feature requests, please visit the [GitHub repository](https://github.com/srescio/hue-cleaner-homeassistant).
