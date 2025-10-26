@@ -122,9 +122,11 @@ class HueCleanerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             )
         else:
             # Failure case - show error
+            # Note: api_key must be provided (even as None) for intl select syntax to work
             return self.async_show_form(
                 step_id="retry_api_key",
                 data_schema=STEP_RETRY_API_KEY_SCHEMA,
+                description_placeholders={"api_key": None},
                 errors={"base": "api_key_timeout"}
             )
 
